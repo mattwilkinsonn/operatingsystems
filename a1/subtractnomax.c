@@ -8,7 +8,6 @@
 
 char *executeSubOperation(char *argv[])
 {
-
     int fd[2];
     pid_t pid;
     int status;
@@ -77,7 +76,7 @@ int main(int argc, char *argv[])
 
     if (argc < 4)
     {
-        printf("Error: Too few arguments \n");
+        printf("Error: Too few arguments\n");
         return 0;
     }
 
@@ -92,15 +91,8 @@ int main(int argc, char *argv[])
     regex_t error;
     regcomp(&error, "Error", 0);
     int error_return;
-
-    while (i < argc - 1)
+    while (i < argc)
     {
-        if (inputIdx > 1)
-        {
-            printf("Error: Too many arguments \n");
-            return 0;
-        }
-
         currentArg = argv[i];
         regex_return = regexec(&regex, currentArg, 0, NULL, 0);
         if (regex_return == 0)
@@ -136,16 +128,18 @@ int main(int argc, char *argv[])
             i++;
             inputIdx++;
         }
+
+        if (inputIdx > 1)
+        {
+            break;
+        }
     }
 
-    if (resolvedInputs[1] == 0)
-    {
-        printf("Error: Divide by zero \n");
-        return 0;
-    }
+    // printf("res0: %d \n", resolvedInputs[0]);
+    // printf("res1: %d \n", resolvedInputs[1]);
 
-    int divided = resolvedInputs[0] / resolvedInputs[1];
+    int subtracted = resolvedInputs[0] - resolvedInputs[1];
 
-    printf("%d \n", divided);
+    printf("%d \n", subtracted);
     return 0;
 }

@@ -8,7 +8,6 @@
 
 char *executeSubOperation(char *argv[])
 {
-
     int fd[2];
     pid_t pid;
     int status;
@@ -77,7 +76,7 @@ int main(int argc, char *argv[])
 
     if (argc < 4)
     {
-        printf("Error: Too few arguments \n");
+        printf("Error: Too few arguments\n");
         return 0;
     }
 
@@ -93,14 +92,8 @@ int main(int argc, char *argv[])
     regcomp(&error, "Error", 0);
     int error_return;
 
-    while (i < argc - 1)
+    while (i < argc)
     {
-        if (inputIdx > 1)
-        {
-            printf("Error: Too many arguments \n");
-            return 0;
-        }
-
         currentArg = argv[i];
         regex_return = regexec(&regex, currentArg, 0, NULL, 0);
         if (regex_return == 0)
@@ -135,6 +128,11 @@ int main(int argc, char *argv[])
             resolvedInputs[inputIdx] = (int)strtol(currentArg, (char **)NULL, 10);
             i++;
             inputIdx++;
+        }
+
+        if (inputIdx > 1)
+        {
+            break;
         }
     }
 
