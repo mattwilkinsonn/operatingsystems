@@ -34,14 +34,16 @@ void execute(char **argv, int numArgs)
         switch (*argv[0])
         {
         case 'A':
-            add(argv, numArgs);
+            execvp("./add", argv);
             break;
         case 'S':
-            subtract(argv, numArgs);
+            execvp("./subtract", argv);
             break;
         case 'M':
+            execvp("./multiply", argv);
             break;
         case 'D':
+            execvp("./divide", argv);
             break;
         default:
             printf("Invalid input \n");
@@ -79,7 +81,7 @@ void main(void)
         {
             exit(0);
         }
-        char firstNum = *argv[1];
+        // char firstNum = *argv[1];
         execute(argv, numArgs); /* otherwise, execute the command */
     }
 }
