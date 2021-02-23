@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
                 break;
             case 'S':
             case 'D':
-                i += 4;
+                i += 3;
                 break;
             default:
                 break;
