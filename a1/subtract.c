@@ -41,7 +41,7 @@ char *executeSubOperation(char *argv[])
             execvp("./add", argv);
             break;
         case 'S':
-            execvp("./subtract", argv);
+            execvp("./subtract", argv); // uses the regular subtract and divide methods as they DO need to check if they have extra arguments as subtract cannot take those.
             break;
         case 'M':
             execvp("./multiply", argv);
@@ -90,15 +90,15 @@ int main(int argc, char *argv[])
     char *currentArg;
     regex_t regex;
     int regex_return;
-    regcomp(&regex, "^[AMSD]$", 0);
-    int inputIdx = 0;
-    int resolvedInputs[2];
+    regcomp(&regex, "^[AMSD]$", 0); // see add.c for comments on the regexes
+    int inputIdx = 0;               // index pointing to the below array
+    int resolvedInputs[2];          // array for storing the number to be subtracted and the subtractor
 
     regex_t error;
     regcomp(&error, "Error", 0);
     int error_return;
 
-    while (i < argc - 1)
+    while (i < argc - 1) // make sure we dont run too many times
     {
         if (inputIdx > 1)
         {
@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
 
         currentArg = argv[i];
 
-        regex_return = regexec(&regex, currentArg, 0, NULL, 0);
+        regex_return = regexec(&regex, currentArg, 0, NULL, 0); // if there is an operation character
         if (regex_return == 0)
         {
             char *returnedVal = executeSubOperation(&argv[i]);
@@ -120,8 +120,8 @@ int main(int argc, char *argv[])
                 return 0;
             }
 
-            resolvedInputs[inputIdx] = (int)strtol(returnedVal, (char **)NULL, 10);
-            switch (*currentArg)
+            resolvedInputs[inputIdx] = (int)strtol(returnedVal, (char **)NULL, 10); // converts num to int, stores in array
+            switch (*currentArg)                                                    // see add.c for more detailed comments on this part
             {
             case 'A':
             case 'M':
@@ -138,14 +138,14 @@ int main(int argc, char *argv[])
         }
         else
         {
-            resolvedInputs[inputIdx] = (int)strtol(currentArg, (char **)NULL, 10);
+            resolvedInputs[inputIdx] = (int)strtol(currentArg, (char **)NULL, 10); // no special operation, just take the number, convert it, and store it
             i++;
             inputIdx++;
         }
     }
 
-    int subtracted = resolvedInputs[0] - resolvedInputs[1];
+    int subtracted = resolvedInputs[0] - resolvedInputs[1]; // subtracts the two nums
 
-    printf("%d \n", subtracted);
+    printf("%d \n", subtracted); // prints subtracted to console
     return 0;
 }

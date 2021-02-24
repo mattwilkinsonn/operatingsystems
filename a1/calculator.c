@@ -79,12 +79,6 @@ void execute(char **argv)
             printf("Invalid input \n");
             break;
         }
-
-        // if (execvp(*argv, argv) < 0)
-        // { /* execute the command  */
-        //     printf("*** ERROR: exec failed\n");
-        //     exit(1);
-        // }
     }
     else
     {                                /* for the parent:      */
@@ -106,8 +100,8 @@ void main(void)
         printf("Calculator> ");           /*   display a prompt             */
         fgets(line, sizeof(line), stdin); /*   read in the command line     */
         // printf("\n");
-        parseRet = parse(line, argv); /*   parse the line               */
-        if (parseRet != 0)
+        // parseRet = parse(line, argv); /*   parse the line               */
+        if (parse(line, argv) != 0) /*   parse the line               */
         {
             continue;
         }
