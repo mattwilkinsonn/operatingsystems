@@ -1,12 +1,18 @@
 # Assignment 1 for Operating Systems Class
 
-## Matt Wilkinson, Spring 2021, Prof Japkowicz, American University
+### Matt Wilkinson, Spring 2021, Prof Japkowicz, American University
+
+## Intro
 
 Calculator shell using processes and pipes, as well as the system calls `fork()`. `wait()`, `execvp()`, `exit()`.
 
 I used the regex library in C to parse the arguments passed to the shell as well.
 
-The compile.sh script will use gcc to compile all of the files with the correct file names. This is necessary for the program to function as if the files are named differently they cannot be opened by `execvp()`.
+## compile.sh
+
+The compile.sh script will use gcc to compile all of the files with the correct file names. This is necessary for the program to function as if the files are named differently they cannot be opened by the existing `execvp()` code.
+
+## Running program
 
 To run the program, first run the compile.sh script with `./compile.sh`, then start the `calculator` program using the command: `./calculator`
 
@@ -44,3 +50,7 @@ But when S (or D) are inside an add or multiply operation like the one further a
 It was impossible to have the same subtract function error out if there are extra arguments in one case and not error out in another, as subtract had no way of knowing about the parent process above it. There might be a crazy way to do this that I'm not aware of, but just seperating them into different files proved much easier.
 
 These two processes do the same thing as subtract.c and divide.c, but just don't check for extra arguments, and exit the loop once they have their two numbers to subtract or divide.
+
+## Conclusion
+
+The calculator passes all of the test cases I could think of, but I'm sure there are some bugs I can't find, especially related to passing invalid arguments. I tried to fix this with the `validate()` function in calculator.c but there may be some way to get around that regex.
