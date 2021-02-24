@@ -8,16 +8,45 @@
 
 int parse(char *line, char **argv)
 {
+    // printf("complile %d\n", compile);
+
     while (*line != '\0')
     { /* if not the end of line ....... */
         while (*line == ' ' || *line == '\t' || *line == '\n')
             *line++ = '\0'; /* replace white spaces with 0    */
-        *argv++ = line;     /* save the argument position     */
+        // printf("line: %s\n", line);
+        // printf("valid: %d\n", valid);
+        *argv++ = line; /* save the argument position     */
         while (*line != '\0' && *line != ' ' &&
                *line != '\t' && *line != '\n')
             line++; /* skip the argument until ...    */
     }
     *argv = '\0'; /* mark the end of argument list  */
+
+    // check arguments against regex
+    return 0;
+}
+
+int validate(char **argv)
+{
+    int i = 0;
+    regex_t validChars;
+    int valid;
+    int compile = regcomp(&validChars, "^[AMSD0-9 \n\r]*$", 0);
+
+    while (*argv[i] != '\0')
+    {
+        // printf("argv[i]: %s\n", argv[i]);
+        valid = regexec(&validChars, argv[i], 0, NULL, 0);
+        if (valid != 0)
+        {
+            printf("Error: Invalid arguments\n");
+            return 1;
+        }
+        i++;
+    }
+
+    return 0;
 }
 
 void execute(char **argv)
@@ -70,18 +99,27 @@ void main(void)
     char *argv[64];  /* the command line argument      */
     char operation;
     int numArgs;
+    int parseRet;
 
     while (1)
     {                                     /* repeat until done ....         */
-        printf("Calculator>");            /*   display a prompt             */
+        printf("Calculator> ");           /*   display a prompt             */
         fgets(line, sizeof(line), stdin); /*   read in the command line     */
         // printf("\n");
-        parse(line, argv); /*   parse the line               */
-        // operation = *argv[0];
+        parseRet = parse(line, argv); /*   parse the line               */
+        if (parseRet != 0)
+        {
+            continue;
+        }
         if (strcmp(argv[0], "exit") == 0)
         {
             exit(0);
         }
+        if (validate(argv) != 0)
+        {
+            continue;
+        }
+        // operation = *argv[0];
         // char firstNum = *argv[1];
         execute(argv); /* otherwise, execute the command */
     }
