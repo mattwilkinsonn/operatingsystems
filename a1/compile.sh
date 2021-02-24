@@ -1,4 +1,4 @@
-gcc calculator.c -o calc
+gcc calculator.c -o calculator
 gcc add.c -o add
 gcc subtract.c -o subtract
 gcc multiply.c -o multiply
