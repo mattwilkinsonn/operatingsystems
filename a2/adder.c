@@ -138,28 +138,68 @@ int main()
     //     {8, 8, 8, 8},
     //     {9, 9, 9, 9}};
 
-    int arr[12][3] = {
-        {9, 9, 9},
-        {9, 9, 9},
-        {9, 9, 9},
-        {9, 9, 9},
-        {9, 9, 9},
-        {9, 9, 9},
-        {9, 9, 9},
-        {9, 9, 9},
-        {9, 9, 9},
-        {9, 9, 9},
-        {9, 9, 9},
-        {9, 9, 9}};
+    // int arr[12][3] = {
+    //     {9, 9, 9},
+    //     {9, 9, 9},
+    //     {9, 9, 9},
+    //     {9, 9, 9},
+    //     {9, 9, 9},
+    //     {9, 9, 9},
+    //     {9, 9, 9},
+    //     {9, 9, 9},
+    //     {9, 9, 9},
+    //     {9, 9, 9},
+    //     {9, 9, 9},
+    //     {9, 9, 9}};
 
-    int totalNums = sizeof(arr) / sizeof(arr[0]);
-    int numDigits = sizeof(arr[0]) / sizeof(arr[0][0]);
-
-    int *p[totalNums];
-    for (int i = 0; i < totalNums; i++)
+    printf("Enter each number in this format: 9 9 9\n");
+    printf("Enter each number on a new line, hit enter a second time to add\n");
+    printf("Note: all numbers need to have the same number of digits. Enter leading zeros for shorter numbers.\n");
+    while (1)
     {
-        p[i] = arr[i];
-    }
+        int digits;
+        int totalNums;
+        printf("Enter the number of digits in each number> ");
+        scanf("%d", &digits);
+        printf("Enter the total numbers to be added> ");
+        scanf("%d", &totalNums);
 
-    adder(p, totalNums, numDigits);
+        printf("Enter each number to be added, with each digit seperated by a space, and each number seperated by a line.\n");
+
+        int arr[totalNums][digits];
+        // char line[1024], *p, *e;
+
+        for (int i = 0; i < totalNums; i++)
+        {
+            printf("> ");
+            for (int j = 0; j < digits; j++)
+            {
+                scanf("%d", &arr[i][j]);
+            }
+        }
+
+        // while (fgets(line, sizeof(line), stdin) != NULL)
+        // {
+        //     // if (*line == '\0' || *line == '\n')
+        //     //     break;
+        //     j = digits - 1;
+        //     for (int i = 0; i < digits; i++)
+        //     {
+        //         sscanf(line, "%d", &arr[totalNums][j]);
+        //         j--;
+        //     }
+        //     totalNums++;
+        // }
+
+        // int totalNums = sizeof(arr) / sizeof(arr[0]);
+        // int numDigits = sizeof(arr[0]) / sizeof(arr[0][0]);
+
+        int *p[totalNums];
+        for (int i = 0; i < totalNums; i++)
+        {
+            p[i] = arr[i];
+        }
+
+        adder(p, totalNums, digits);
+    }
 }
