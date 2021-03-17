@@ -17,8 +17,12 @@ Each thread gets passed a reference to the units and carries arrays, as well as 
 
 Once the threads are finished, adds the numbers together (and checks for a second carry), and then prints the result.
 
+Can run the precompiled adder file or compile it from the adder.c file. If compiling, use the -lpthread flag to add the pthreads library.
+
 ## Java version
 
 Basically the same logic as the C version, parsing in the main() function, and then creates the threads and adds in the adder() function, which runs the AddThread class in each thread. A lot less complicated as parsing in Java is easier, and I can just pass variables to the thread instead of having to pass a struct.
 
 Uses global arrays for units and carries (the ones that the threads put their results into) because you can't pass references in Java.
+
+The actual java file is located in the src folder.
