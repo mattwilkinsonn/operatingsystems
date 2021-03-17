@@ -1,6 +1,6 @@
 # Assignment 1 for Operating Systems Class
 
-### Matt Wilkinson, Spring 2021, Prof Japkowicz, American University
+## Matt Wilkinson, Spring 2021, Prof Japkowicz, American University
 
 ## Intro
 
