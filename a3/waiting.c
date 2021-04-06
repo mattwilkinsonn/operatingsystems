@@ -35,9 +35,12 @@ void *student(void *arg)
 
     while (1)
     {
+        // begin by studying for random time.
         int random_sleep = generateRandomSleep(100, 10);
         printf("Student %d studying for %d seconds\n", id, random_sleep);
         sleep(random_sleep);
+
+        // needs help. checks if the waiting room has space.
         pthread_mutex_lock(&waiting_room_free_lock);
         bool isWait = false;
         printf("Student %d checking if waiting room has space\n", id);
@@ -48,31 +51,38 @@ void *student(void *arg)
             isWait = true;
         }
         pthread_mutex_unlock(&waiting_room_free_lock);
+        // in waiting room, wait for teacher.
         if (isWait)
         {
             printf("Student %d in waiting room, waiting for teacher\n", id);
-
+            // waiting room 'queue'
             sem_wait(&help);
             printf("Student %d next to be helped\n", id);
+
+            // sync with teacher
             pthread_mutex_lock(&being_helped);
 
+            // exit waiting room, freeing up spot
             pthread_mutex_lock(&waiting_room_free_lock);
             waiting_room_free += 1;
             pthread_mutex_unlock(&waiting_room_free_lock);
             printf("Student %d left waiting room\n", id);
 
+            // work with teacher for random amount of time
             int random_sleep = generateRandomSleep(10, 3);
             printf("Student %d being helped for %d seconds\n", id, random_sleep);
             sleep(random_sleep);
 
             printf("Student %d done being helped\n", id);
+
+            // allows teacher to check num students etc
             pthread_mutex_unlock(&being_helped);
 
+            // tells teacher they are done
             pthread_mutex_unlock(&teacher_mut);
-            printf("Student %d has unlocked teacher mutex\n", id);
-            sem_post(&help);
 
-            printf("Student %d has released help sephamore\n", id);
+            // leave the queue
+            sem_post(&help);
         }
         else
         {
@@ -88,28 +98,33 @@ void *teacher(void *arg)
     while (1)
     {
         sem_getvalue(&help, &help_val);
+        // continously polls this value until student has taken it
         if (help_val == 0)
         {
+            // Note: unlocked by student when they are done
             pthread_mutex_lock(&teacher_mut);
             printf("Teacher begin helping student\n");
 
             num_consecutive_students += 1;
 
+            // grab from student, prevents next one from going until checked consecutive students
             pthread_mutex_lock(&being_helped);
             printf("Teacher done helping student\n");
             if (num_consecutive_students >= 3)
             {
                 int random_sleep = generateRandomSleep(10, 3);
-                printf("Teacher consectuive students: %d, Teacher taking break for %d seconds\n", num_consecutive_students, random_sleep);
+                printf("Teacher consecutive students: %d, Teacher taking break for %d seconds\n", num_consecutive_students, random_sleep);
                 sleep(random_sleep);
                 num_consecutive_students = 0;
             }
             pthread_mutex_unlock(&being_helped);
             teacher_working = false;
         }
+        // boolean so it only runs once until reset
         else if (!teacher_working)
         {
             pthread_mutex_lock(&waiting_room_free_lock);
+            // no students waiting, reset consecutive and say working on own work
             if (waiting_room_free >= 2)
             {
                 num_consecutive_students = 0;
@@ -124,6 +139,8 @@ void *teacher(void *arg)
 int main()
 {
     printf("Begin program\n");
+
+    // Init mutexes and sephamores, seed random value, create threads and join
 
     int num_students = 20;
     pthread_t student_ids[20];
