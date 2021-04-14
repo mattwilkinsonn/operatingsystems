@@ -82,11 +82,98 @@ int memory[40] = {0};
 
 int pageTables[10][10] = {-2};
 
+void process_in(struct ProcessChange process)
+{
+
+    int num_frames = get_num_frames(process.size);
+    printf("Page Table for in process %d:\n", process.process_id);
+    for (int i = 0; i < num_frames; i++)
+    {
+        if (pageTables[process.process_id][i] != -1)
+        {
+            printf("invalid in: Process %d page %d is not set to -1\n", process.process_id, i);
+            return 1;
+        }
+
+        int frame = pop();
+        memory[frame] = process.process_id;
+        pageTables[process.process_id][i] = frame;
+
+        printf("Process page %d allocated to memory frame %d\n", i, pageTables[process.process_id][i]);
+    }
+}
+
+void process_new(struct ProcessChange process)
+{
+
+    int num_frames = get_num_frames(process.size);
+    printf("Page Table for new process %d:\n", process.process_id);
+    for (int i = 0; i < num_frames; i++)
+    {
+        if (pageTables[process.process_id][i] != -2)
+        {
+            printf("invalid new: Process %d page %d is not set to -2\n", process.process_id, i);
+        }
+
+        int frame = pop();
+        memory[frame] = process.process_id;
+        pageTables[process.process_id][i] = frame;
+
+        printf("Process page %d allocated to memory frame %d\n", i, pageTables[process.process_id][i]);
+    }
+}
+
+void process_out(struct ProcessChange process)
+{
+    int num_frames = get_num_frames(process.size);
+    for (int i = num_frames; i >= 0; i--)
+    {
+        if (pageTables[process.process_id][i] == -1 || pageTables[process.process_id][i] == -2)
+        {
+            printf("invalid out: Process %d page %d is not in memory\n", process.process_id, i);
+        }
+
+        int frame = pageTables[process.process_id][i];
+        memory[frame] = 0;
+        pageTables[process.process_id][i] = -1;
+        push(frame);
+    }
+    printf("Process %d's page table entries have been set to -1\n", process.process_id);
+}
+
+void process_terminated(struct ProcessChange process)
+{
+    int num_frames = get_num_frames(process.size);
+    for (int i = num_frames; i >= 0; i--)
+    {
+
+        if (pageTables[process.process_id][i] == -2)
+        {
+            printf("invalid termination: Process %d page %d is already terminated\n", process.process_id, i);
+        }
+
+        int frame = pageTables[process.process_id][i];
+        memory[frame] = 0;
+        pageTables[process.process_id][i] = -2;
+        push(frame);
+
+        printf("Process %d's page table has been deleted\n", process.process_id);
+    }
+}
+
 int main()
 {
     for (int i = 40; i >= 0; i--)
     {
         push(i);
+    }
+
+    for (int i = 0; i < 10; i++)
+    {
+        for (int j = 0; j < 10; j++)
+        {
+            pageTables[i][j] = -2;
+        }
     }
 
     for (int i = 0; i < num_inputs; i++)
@@ -95,17 +182,21 @@ int main()
         switch (process.status)
         {
         case new:
+            process_new(process);
+            break;
         case in:
-            process_new_or_in(process);
+            process_in(process);
             break;
         case out:
             process_out(process);
             break;
         case terminated:
+            process_terminated(process);
+            break;
         default:
             return 1;
         }
-        printf("process %d with size %d status is %d\n", input[i].process_id, input[i].size, input[i].status);
+        // printf("process %d with size %d status is %d\n", input[i].process_id, input[i].size, input[i].status);
     }
 }
 
@@ -120,44 +211,4 @@ int get_num_frames(int process_size)
     {
         return (process_size / 5) + 1;
     }
-}
-
-void process_add(struct ProcessChange process)
-{
-    int num_frames = get_num_frames(process.size);
-    for (int i = 0; i < num_frames; i++)
-    {
-        int frame = pop();
-        memory[frame] = process.process_id;
-        pageTables[process.process_id][i] = frame;
-    }
-}
-
-void process_new_or_in(struct ProcessChange process)
-{
-    int num_frames = get_num_frames(process.size);
-    process_add(process);
-    printf("Page Table for new process %d:\n", process.process_id);
-    for (int i = 0; i < num_frames; i++)
-    {
-        printf("Process page %d allocated to memory frame %d", i, pageTables[process.process_id][i]);
-    }
-}
-
-void process_out(struct ProcessChange process)
-{
-    int num_frames = get_num_frames(process.size);
-    for (int i = num_frames; i >= 0; i--)
-    {
-        int frame = pageTables[process.process_id][i];
-        memory[frame] = 0;
-        pageTables[process.process_id][i] = -1;
-        push(frame);
-    }
-    printf("Process %d's page table entires have been set to -1", process.process_id);
-}
-
-void process_terminated(struct ProcessChange process)
-{
-    int num_frames = get_num_frames(process.size);
 }
