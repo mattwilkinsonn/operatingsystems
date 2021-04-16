@@ -113,7 +113,7 @@ void process_in(struct ProcessChange process)
     {
         if (pageTables[process.process_id][i] != -1)
         {
-            printf("invalid in: Process %d page %d is not set to -1\n", process.process_id, i);
+            printf("invalid in: Process %d page %d is not set to -1\n", process.process_id, i + 1);
             return 1;
         }
 
@@ -121,7 +121,7 @@ void process_in(struct ProcessChange process)
         memory[frame] = process.process_id;
         pageTables[process.process_id][i] = frame;
 
-        printf("Process page %d allocated to memory frame %d\n", i, pageTables[process.process_id][i]);
+        printf("Process page %d allocated to memory frame %d\n", i + 1, pageTables[process.process_id][i] + 1);
     }
 
     int internal_fragmentation = get_internal_fragmentation(process.size);
@@ -137,14 +137,14 @@ void process_new(struct ProcessChange process)
     {
         if (pageTables[process.process_id][i] != -2)
         {
-            printf("invalid new: Process %d page %d is not set to -2\n", process.process_id, i);
+            printf("invalid new: Process %d page %d is not set to -2\n", process.process_id, i) + 1;
         }
 
         int frame = pop();
         memory[frame] = process.process_id;
         pageTables[process.process_id][i] = frame;
 
-        printf("Process page %d allocated to memory frame %d\n", i, pageTables[process.process_id][i]);
+        printf("Process page %d allocated to memory frame %d\n", i + 1, pageTables[process.process_id][i] + 1);
     }
 
     int internal_fragmentation = get_internal_fragmentation(process.size);
@@ -158,7 +158,7 @@ void process_out(struct ProcessChange process)
     {
         if (pageTables[process.process_id][i] == -1 || pageTables[process.process_id][i] == -2)
         {
-            printf("invalid out: Process %d page %d is not in memory\n", process.process_id, i);
+            printf("invalid out: Process %d page %d is not in memory\n", process.process_id, i + 1);
         }
 
         int frame = pageTables[process.process_id][i];
@@ -177,7 +177,7 @@ void process_terminated(struct ProcessChange process)
 
         if (pageTables[process.process_id][i] == -2)
         {
-            printf("invalid termination: Process %d page %d is already terminated\n", process.process_id, i);
+            printf("invalid termination: Process %d page %d is already terminated\n", process.process_id, i + 1);
         }
 
         int frame = pageTables[process.process_id][i];
@@ -248,6 +248,6 @@ int main()
     while (!isempty())
     {
         int free_frame = pop();
-        printf("%d\n", free_frame);
+        printf("%d\n", free_frame + 1);
     }
 }
