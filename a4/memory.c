@@ -82,6 +82,28 @@ int memory[40] = {0};
 
 int pageTables[10][10] = {-2};
 
+int get_num_frames(int process_size)
+{
+    int num_frames;
+    if (process_size % 5 == 0)
+    {
+        return process_size / 5;
+    }
+    else
+    {
+        return (process_size / 5) + 1;
+    }
+}
+
+int get_internal_fragmentation(int process_size)
+{
+    int mod = process_size % 5;
+    if (mod == 0)
+        return 0;
+
+    return 5 - (process_size % 5);
+}
+
 void process_in(struct ProcessChange process)
 {
 
@@ -101,6 +123,9 @@ void process_in(struct ProcessChange process)
 
         printf("Process page %d allocated to memory frame %d\n", i, pageTables[process.process_id][i]);
     }
+
+    int internal_fragmentation = get_internal_fragmentation(process.size);
+    printf("Process has wasted %d KB due to internal fragmentation\n", internal_fragmentation);
 }
 
 void process_new(struct ProcessChange process)
@@ -121,12 +146,15 @@ void process_new(struct ProcessChange process)
 
         printf("Process page %d allocated to memory frame %d\n", i, pageTables[process.process_id][i]);
     }
+
+    int internal_fragmentation = get_internal_fragmentation(process.size);
+    printf("Process has wasted %d KB due to internal fragmentation\n", internal_fragmentation);
 }
 
 void process_out(struct ProcessChange process)
 {
     int num_frames = get_num_frames(process.size);
-    for (int i = num_frames; i >= 0; i--)
+    for (int i = num_frames - 1; i >= 0; i--)
     {
         if (pageTables[process.process_id][i] == -1 || pageTables[process.process_id][i] == -2)
         {
@@ -144,7 +172,7 @@ void process_out(struct ProcessChange process)
 void process_terminated(struct ProcessChange process)
 {
     int num_frames = get_num_frames(process.size);
-    for (int i = num_frames; i >= 0; i--)
+    for (int i = num_frames - 1; i >= 0; i--)
     {
 
         if (pageTables[process.process_id][i] == -2)
@@ -158,6 +186,23 @@ void process_terminated(struct ProcessChange process)
         push(frame);
 
         printf("Process %d's page table has been deleted\n", process.process_id);
+    }
+}
+
+char *match_status_to_str(struct ProcessChange process)
+{
+    switch (process.status)
+    {
+    case new:
+        return "new";
+    case in:
+        return "in";
+    case out:
+        return "out";
+    case terminated:
+        return "terminated";
+    default:
+        return "err";
     }
 }
 
@@ -178,6 +223,7 @@ int main()
 
     for (int i = 0; i < num_inputs; i++)
     {
+        printf("\nBegin process %d -> %s, with size %d KB\n", input[i].process_id, match_status_to_str(input[i]), input[i].size);
         struct ProcessChange process = input[i];
         switch (process.status)
         {
@@ -196,19 +242,12 @@ int main()
         default:
             return 1;
         }
-        // printf("process %d with size %d status is %d\n", input[i].process_id, input[i].size, input[i].status);
     }
-}
 
-int get_num_frames(int process_size)
-{
-    int num_frames;
-    if (process_size % 5 == 0)
+    printf("\nFree Frames:\n");
+    while (!isempty())
     {
-        return process_size / 5;
-    }
-    else
-    {
-        return (process_size / 5) + 1;
+        int free_frame = pop();
+        printf("%d\n", free_frame);
     }
 }
