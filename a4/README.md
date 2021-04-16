@@ -6,6 +6,12 @@
 
 Page-based memory management simulation, written in C. 200KB memory with 5KB pages, and a list of process changes that need to be allocated/deallocated from the memory.
 
+## Compiling/Running Program
+
+To compile the program, run `gcc memory.c -o memory` inside the directory. Then run `./memory` to start the program.
+
+You can also just use the pre-compiled version in the directory by running `./memory`.
+
 ## Main
 
 Program starts in the main() function, which takes the input from the user on how many process changes there are, and then takes the information (id, size, and status) about each change from the user. It then puts this information into a ProcessChange struct, and creates a list of these structs.
